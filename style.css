@@ -152,37 +152,38 @@ body {
     box-shadow: 0 6px 12px rgba(0,0,0,0.3); /* 그림자 진하게 */
 }
 
-/* 게임 설명 화면 */
-.description-container {
-    /* 닉네임 컨테이너와 유사한 스타일이지만 위치 조정 */
-    position: absolute; /* 절대 위치 */
-    top: 55%; /* 게임 설명 이미지 박스 위치에 맞춤 */
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.85); /* 반투명 흰색 배경 */
-    border: 5px solid #ccc; /* 테두리 */
-    border-radius: 20px; /* 둥근 모서리 */
-    padding: 30px 40px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    max-width: 80%; /* 컨테이너 너비 제한 */
-    box-sizing: border-box; /* padding이 너비에 포함되도록 */
-}
-
-/* 게임 설명 화면 */
-.description-container {
-    background-color: transparent; /* 이미지 자체에 텍스트가 있으므로 배경을 투명하게 */
-    border: none; /* 테두리 제거 */
-    box-shadow: none; /* 그림자 제거 */
-    padding: 0; /* 패딩 제거 */
-    /* 버튼 위치 조정 */
+/* 게임 설명 화면에 표시될 닉네임 스타일 */
+.description-nickname {
     position: absolute;
-    top: 75%; /* 5번째 이미지의 '게임 시작' 버튼 위치에 맞춰 조정 */
+    top: 32%; /* 이미지 내 'OOO과' 부분의 세로 위치 조정 */
+    /* top: 32% (5번째 이미지의 'OOO과' 텍스트 위치에 맞춰 조절) */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700; /* 이미지의 텍스트 색상과 유사하게 (금색 계열) */
+    font-family: 'Jua', sans-serif;
+    font-size: 2.5em; /* 텍스트 크기 조정 */
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 텍스트 그림자 */
+    white-space: nowrap; /* 닉네임이 한 줄에 표시되도록 */
+    z-index: 3; /* 버튼 위에 오도록 */
+    text-align: center;
+    width: 100%; /* 중앙 정렬을 위해 */
+}
+/* .description-container 의 top, transform 조정 */
+.description-container {
+    /* 기존 스타일 유지 */
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    position: absolute;
+    top: 75%; /* 버튼 위치는 유지 (이전 설명에서 이미 조정됨) */
     transform: translateY(-50%);
-    width: 100%; /* 너비 100%로 변경 (버튼만 있으므로) */
-    max-width: none; /* 너비 제한 해제 */
-    display: flex; /* 버튼을 중앙에 배치하기 위해 flexbox 사용 */
-    justify-content: center; /* 가로 중앙 정렬 */
-    align-items: center; /* 세로 중앙 정렬 (버튼만 있으면 의미는 덜함) */
+    width: 100%;
+    max-width: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* #startGameButton만 .description-container 내에 있으므로, 버튼 스타일은 그대로 유지 */

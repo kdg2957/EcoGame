@@ -3,23 +3,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const descriptionScreen = document.getElementById('descriptionScreen');
     const nicknameInput = document.getElementById('nicknameInput');
     const startButton = document.getElementById('startButton');
-    const startGameButton = document.getElementById('startGameButton'); // 게임 설명 화면의 게임 시작 버튼
+    const startGameButton = document.getElementById('startGameButton');
+    const displayedNickname = document.getElementById('displayedNickname'); // 새로 추가된 요소
 
-    let playerNickname = ''; // 플레이어 닉네임을 저장할 변수
+    let playerNickname = '';
 
     // 닉네임 입력 화면 -> 게임 설명 화면
     startButton.addEventListener('click', () => {
-        playerNickname = nicknameInput.value.trim(); // 닉네임 앞뒤 공백 제거
+        playerNickname = nicknameInput.value.trim();
 
         if (playerNickname.length >= 1 && playerNickname.length <= 4) {
             console.log("플레이어 닉네임:", playerNickname);
+            
+            // 게임 설명 화면에 닉네임 표시
+            displayedNickname.textContent = `${playerNickname}과`; // "OOO과"만 표시
             
             nicknameScreen.classList.remove('active');
             descriptionScreen.classList.add('active');
 
         } else {
             alert('닉네임은 1글자 이상 4글자 이하로 입력해주세요.');
-            nicknameInput.focus(); // 다시 입력 필드로 포커스 이동
+            nicknameInput.focus();
         }
     });
 
@@ -34,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 추가: 닉네임 입력 필드에서 Enter 키 눌렀을 때도 다음 화면으로 이동
     nicknameInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
-            startButton.click(); // 버튼 클릭 이벤트 트리거
+            startButton.click();
         }
     });
 });
