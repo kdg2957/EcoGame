@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("플레이어 닉네임:", playerNickname);
             
             // 게임 설명 화면에 닉네임 표시
-            displayedNickname.textContent = `${playerNickname}과`; // "OOO과"만 표시
+            // 이미지 내 '닉네임(이)와' 부분에 '닉네임'만 동적으로 삽입
+            displayedNickname.textContent = `${playerNickname}`; 
             
             nicknameScreen.classList.remove('active');
             descriptionScreen.classList.add('active');
