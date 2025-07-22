@@ -3,10 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Eco Web Game</title>
+    <title>RE: PLAY 재부팅</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Hello, Eco Game!</h1>
-    <p>This is my first web game project.</p>
+    <div id="app">
+        <section id="nicknameScreen" class="screen active">
+            <img src="images/KakaoTalk_20250721_163207779.png" alt="닉네임 입력 배경" class="background-image">
+            <div class="content-overlay">
+                <div class="nickname-container">
+                    <div class="nickname-title"></div>
+                    <input type="text" id="nicknameInput" maxlength="4" placeholder="최대 4글자">
+                    <button id="startButton">다음</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="descriptionScreen" class="screen">
+            <img src="images/KakaoTalk_20250721_121925437.png" alt="게임 설명 배경" class="background-image">
+            <div class="content-overlay">
+                <div class="description-container">
+                    <div class="game-description-text">
+                        <p style="font-size: 1.2em;"><strong>[닉네임]</strong>과 떠나는 모험!</p>
+                        <p style="font-size: 1.2em;">도시, 바다, 정글로 떠나볼까?</p>
+                        <p style="font-size: 1.2em; margin-top: 20px;">20초 안에 세 장소에 숨겨진</p>
+                        <p style="font-size: 1.2em;">업사이클링 재료를 찾아</p>
+                        <p style="font-size: 1.2em;">신기록을 세워보세요</p>
+                    </div>
+                    <button id="startGameButton">게임 시작!</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="gameScreen" class="screen">
+            <p>게임 플레이 화면</p>
+        </section>
+
+        <section id="resultScreen" class="screen">
+            <p>결과 화면</p>
+        </section>
+
+        <section id="rankingScreen" class="screen">
+            <p>랭킹 화면</p>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
