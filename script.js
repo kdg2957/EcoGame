@@ -14,18 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (playerNickname.length >= 1 && playerNickname.length <= 4) {
             console.log("플레이어 닉네임:", playerNickname);
             
-            // 게임 설명 화면의 텍스트를 동적으로 업데이트
-            const descriptionTextElement = descriptionScreen.querySelector('.game-description-text');
-            if (descriptionTextElement) {
-                descriptionTextElement.innerHTML = `
-                    <p style="font-size: 1.2em;"><strong>${playerNickname}</strong>과 떠나는 모험!</p>
-                    <p style="font-size: 1.2em;">도시, 바다, 정글로 떠나볼까?</p>
-                    <p style="font-size: 1.2em; margin-top: 20px;">20초 안에 세 장소에 숨겨진</p>
-                    <p style="font-size: 1.2em;">업사이클링 재료를 찾아</p>
-                    <p style="font-size: 1.2em;">신기록을 세워보세요</p>
-                `;
-            }
-            
             nicknameScreen.classList.remove('active');
             descriptionScreen.classList.add('active');
 
