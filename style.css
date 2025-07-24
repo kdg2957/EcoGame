@@ -223,3 +223,24 @@ body {
 .game-item[data-found="true"] {
     opacity: 0 !important; /* JavaScript에서 설정하지만, 혹시 모를 경우를 대비해 */
 }
+
+/* --- 기존 CSS 코드 유지 --- */
+
+/* 새로운 타이머 표시 스타일 */
+#timerDisplay {
+    position: absolute;
+    top: 20px; /* 상단에서 20px 떨어짐 */
+    right: 20px; /* 우측에서 20px 떨어짐 */
+    font-size: 3em; /* 폰트 크기 조절 */
+    font-weight: bold;
+    color: #ff4500; /* 주황색 계열 색상 */
+    background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
+    padding: 5px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 20; /* 다른 요소들 위에 오도록 */
+    font-family: 'GalmuriMono9 Regular', sans-serif;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    min-width: 60px; /* 숫자가 한 자리로 줄어도 크기가 많이 변하지 않게 */
+    text-align: center;
+}
