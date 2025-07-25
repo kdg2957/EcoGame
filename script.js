@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 기존 변수들
     const nicknameScreen = document.getElementById('nicknameScreen');
     const descriptionScreen = document.getElementById('descriptionScreen');
-    // const gameScreen = document.getElementById('gameScreen'); // 제거: game-play-screen으로 대체됨
     const nicknameInput = document.getElementById('nicknameInput');
     const startButton = document.getElementById('startButton');
     const startGameButton = document.getElementById('startGameButton');
@@ -16,16 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultScreen = document.getElementById('resultScreen'); // 결과 화면 변수 추가
     const rankingScreen = document.getElementById('rankingScreen'); // 랭킹 화면 변수 추가 (나중에 사용)
 
+    const timerDisplay = document.getElementById('timerDisplay'); // 타이머 DOM 요소
+    // --- 새로 추가된 DOM 요소 변수 ---
+    const foundItemsDisplay = document.getElementById('foundItemsDisplay'); // 찾은 아이템 개수 DOM 요소 추가
+    const restartButton = document.getElementById('restartButton'); // 재시작 버튼 변수 추가
+
+
     let currentMapIndex = 0; // 현재 맵 인덱스 (0: 정글, 1: 바다, 2: 도시)
     let foundItemsCount = 0; // 현재 맵에서 찾은 아이템 개수 (맵 전환 시 초기화)
     let totalFoundItems = 0; // 전체 게임에서 찾은 총 아이템 개수 (게임 전체에서 유지)
     const itemsPerMap = 10; // 맵 당 숨은 아이템 개수
 
-    // --- 새로 추가된 DOM 요소 변수 ---
-    const restartButton = document.getElementById('restartButton'); // 재시작 버튼 변수 추가
-
-    // --- 타이머 관련 변수 추가 ---
-    const timerDisplay = document.getElementById('timerDisplay'); // 타이머 DOM 요소
     const totalGameTime = 20; // 전체 게임 시간 (초)
     let timeLeft = totalGameTime; // 남은 시간
     let timerInterval; // setInterval을 저장할 변수
@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // 각 맵에 숨겨질 아이템 이미지 경로 (총 30개)
-    // (이 부분은 사용하시는 정확한 파일명과 확장자를 확인하여 필요시 수정해주세요.)
     const mapItems = [
         // 첫 번째 맵 (정글) 아이템
         [
@@ -75,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timeLeft = totalGameTime; // 타이머 초기화
         timerDisplay.textContent = timeLeft; // 화면 타이머 표시 업데이트
         stopTimer(); // 혹시 모를 상황 대비 타이머 중지
+        updateFoundItemsDisplay(); // 찾은 아이템 개수 디스플레이 초기화
     }
 
     // --- 타이머 관련 함수 ---
@@ -93,9 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timerDisplay.textContent = "0";
-                // TODO: 시간이 다 됐을 때 게임 종료 처리 (랜덤 카드, 점수 표시)
-                // alert("시간 초과! 게임 종료!"); // 임시 알림 제거
-
                 // 시간 초과 시 게임 종료 처리
                 endGameProcess();
             }
@@ -110,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 이 함수는 '다시 시작하기' 버튼에 연결됩니다.
     function resetGameAndReturnToNickname() {
         stopTimer(); // 타이머 중지
-        resetGame(); // 게임 상태 초기화
+        resetGame(); // 게임 상태 초기화 (여기서 foundItemsDisplay도 초기화됨)
         showScreen(nicknameScreen); // 닉네임 화면으로 전환
         // 닉네임 입력 필드 초기화 및 포커스
         nicknameInput.value = '';
@@ -123,16 +120,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gameBoard.style.backgroundImage = `url(${mapBackgrounds[currentMapIndex]})`;
         
         foundItemsCount = 0; // 현재 맵에서 찾은 아이템 개수 초기화 (중요: 다음 맵으로 갈 때마다 리셋)
+        updateFoundItemsDisplay(); // 맵 전환 시 찾은 아이템 개수 디스플레이 업데이트 (현재 맵 아이템 0으로 초기화 반영)
 
         const currentMapItems = mapItems[currentMapIndex]; // mapItems로 변수명 변경 반영
 
-        // 아이템들을 무작위 위치에 배치
-        // (gameBoard.offsetWidth / offsetHeight는 DOM이 렌더링 된 후에야 정확한 값을 가짐)
-        // ensure gameBoard is visible and has dimensions before calculating random positions
         const boardWidth = gameBoard.offsetWidth;
         const boardHeight = gameBoard.offsetHeight;
 
-        // 아이템의 크기를 고려하여 화면 밖으로 나가지 않도록 조정 (CSS의 .game-item width/height와 맞춰주세요.)
         const itemSize = 100; // game-item의 width/height와 일치해야 합니다.
 
         for (let i = 0; i < itemsPerMap; i++) {
@@ -156,10 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     foundItemsCount++; // 현재 맵에서 찾은 아이템 수 증가
                     totalFoundItems++; // 전체 게임에서 찾은 아이템 수 증가 (핵심!)
 
+                    updateFoundItemsDisplay(); // 찾은 아이템 개수 디스플레이 업데이트
+
                     console.log(`현재 맵 찾은 아이템: ${foundItemsCount}/${itemsPerMap}`);
                     console.log(`전체 찾은 아이템: ${totalFoundItems}/${mapItems.length * itemsPerMap}`);
-
-                    // TODO: 찾은 아이템 개수 UI 업데이트 로직 추가 (다음 기능)
 
                     if (foundItemsCount === itemsPerMap) { // 현재 맵의 모든 아이템을 찾았을 때
                         setTimeout(() => { // 잠시 텀을 두고 다음 맵으로 전환
@@ -171,9 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             } else {
                                 // 모든 맵 클리어! 게임 종료 처리
                                 console.log('모든 맵 클리어! 게임 종료.');
-                                // TODO: 게임 클리어 시 랜덤 카드 표시 및 점수 화면으로 전환 (나중에 추가)
-                                alert('모든 맵을 클리어했습니다! 게임 종료.'); // 임시 알림
-                                resetGameAndReturnToNickname();
+                                // 모든 맵 클리어 시 게임 종료 처리
+                                endGameProcess();
                             }
                         }, 500); // 0.5초 대기
                     }
@@ -191,6 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 여기서는 resetGame()을 호출하지 않습니다. 사용자가 '다시 시작하기' 버튼을 누를 때까지 결과 화면에 머무릅니다.
     }
 
+
+    // --- 랜덤 카드 표시 함수 ---
+    /**
+     * 게임 종료 시 4개의 카드 중 하나를 무작위로 표시하고 해당 이미지를 로드하는 함수.
+     * 이 함수는 게임 로직의 '게임 종료' 시점에 호출됩니다.
+     */
     function displayRandomCardAtGameEnd() {
         const cards = [
             document.getElementById('card1'),
@@ -239,6 +238,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`표시될 이미지: ${selectedImageSrc}`);
     }
 
+    // --- 찾은 아이템 개수를 화면에 업데이트하는 함수 ---
+    function updateFoundItemsDisplay() {
+        foundItemsDisplay.textContent = `찾은 개수: ${totalFoundItems}`;
+    }
+
+
     // --- 이벤트 리스너 ---
 
     startButton.addEventListener('click', () => {
@@ -263,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetGame(); // 새로운 게임 시작 전에 게임 상태 초기화
         initializeGameBoard(); // 첫 맵 로드 및 아이템 배치
         startTimer(); // 게임 시작과 함께 타이머 시작!
+        updateFoundItemsDisplay(); // 게임 시작 시 찾은 아이템 개수 초기화 및 표시
     });
 
     // 추가: 닉네임 입력 필드에서 Enter 키 눌렀을 때도 다음 화면으로 이동
@@ -279,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 초기 로드 시 화면 설정
-    // 모든 화면을 기본적으로 숨기고 닉네임 화면만 표시합니다.
-    // DOMContentLoaded 내부에 있으므로, 스크립트 로드 시 바로 실행됩니다.
     showScreen(nicknameScreen); // 초기 화면은 닉네임 입력 화면
+    updateFoundItemsDisplay(); // 페이지 로드 시 초기값 표시 (0)
 });
