@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalFoundItems = 0; // 전체 게임에서 찾은 총 아이템 개수 (게임 전체에서 유지)
     const itemsPerMap = 10; // 맵 당 숨은 아이템 개수
 
+    // --- 새로 추가된 DOM 요소 변수 ---
+    const restartButton = document.getElementById('restartButton'); // 재시작 버튼 변수 추가
+
     // --- 타이머 관련 변수 추가 ---
     const timerDisplay = document.getElementById('timerDisplay'); // 타이머 DOM 요소
     const totalGameTime = 20; // 전체 게임 시간 (초)
@@ -91,8 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(timerInterval);
                 timerDisplay.textContent = "0";
                 // TODO: 시간이 다 됐을 때 게임 종료 처리 (랜덤 카드, 점수 표시)
-                alert("시간 초과! 게임 종료!"); // 임시 알림
-                resetGameAndReturnToNickname();
+                // alert("시간 초과! 게임 종료!"); // 임시 알림 제거
+
+                // 시간 초과 시 게임 종료 처리
+                endGameProcess();
             }
         }, 1000); // 1초마다 감소
     }
@@ -102,10 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 게임 종료 후 닉네임 화면으로 돌아가는 함수 (타이머 중지 및 초기화 포함)
+    // 이 함수는 '다시 시작하기' 버튼에 연결됩니다.
     function resetGameAndReturnToNickname() {
         stopTimer(); // 타이머 중지
         resetGame(); // 게임 상태 초기화
         showScreen(nicknameScreen); // 닉네임 화면으로 전환
+        // 닉네임 입력 필드 초기화 및 포커스
+        nicknameInput.value = '';
+        nicknameInput.focus();
     }
 
     // 게임 보드 초기화 및 아이템 배치
@@ -174,6 +183,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- 게임 종료 시 호출될 중앙 처리 함수 ---
+    function endGameProcess() {
+        stopTimer(); // 타이머 중지
+        displayRandomCardAtGameEnd(); // 랜덤 카드 표시 함수 호출
+        showScreen(resultScreen); // 결과 화면으로 전환
+        // 여기서는 resetGame()을 호출하지 않습니다. 사용자가 '다시 시작하기' 버튼을 누를 때까지 결과 화면에 머무릅니다.
+    }
+
+    function displayRandomCardAtGameEnd() {
+        const cards = [
+            document.getElementById('card1'),
+            document.getElementById('card2'),
+            document.getElementById('card3'),
+            document.getElementById('card4')
+        ];
+
+        const cardImages = [ // 랜덤으로 표시할 이미지 경로
+            './images/card1.png',
+            './images/card2.png',
+            './images/card3.png',
+            './images/card4.png'
+        ];
+
+        // 1. 모든 카드를 숨기고, 모든 카드 내부의 이미지도 숨깁니다.
+        cards.forEach(card => {
+            if (card) {
+                card.style.display = 'none';
+                const img = card.querySelector('.card-image');
+                if (img) {
+                    img.src = ''; // 이미지 소스 초기화
+                    img.style.display = 'none'; // 이미지 자체를 숨김
+                }
+            }
+        });
+
+        // 2. 0부터 3까지의 무작위 정수 인덱스를 생성합니다.
+        const randomIndex = Math.floor(Math.random() * cards.length);
+
+        // 3. 무작위로 선택된 카드를 표시하고, 해당 이미지를 로드합니다.
+        const selectedCard = cards[randomIndex];
+        const selectedImageSrc = cardImages[randomIndex]; // 선택된 카드에 해당하는 이미지 경로
+
+        if (selectedCard) {
+            selectedCard.style.display = 'flex'; // 카드를 보이게 함 (CSS에서 flex로 설정했으므로)
+            
+            const imgElement = selectedCard.querySelector('.card-image');
+            if (imgElement) {
+                imgElement.src = selectedImageSrc; // 이미지 src 설정
+                imgElement.style.display = 'block'; // 이미지를 보이게 함
+            }
+        }
+
+        console.log(`무작위로 선택된 카드: ${selectedCard ? selectedCard.id : '없음'}`);
+        console.log(`표시될 이미지: ${selectedImageSrc}`);
+    }
 
     // --- 이벤트 리스너 ---
 
@@ -206,6 +270,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.key === 'Enter') {
             startButton.click();
         }
+    });
+
+    // 새로 추가: 재시작 버튼 클릭 시 게임 초기화 및 닉네임 화면으로 이동
+    restartButton.addEventListener('click', () => {
+        console.log("다시 시작하기 버튼 클릭!");
+        resetGameAndReturnToNickname();
     });
 
     // 초기 로드 시 화면 설정
