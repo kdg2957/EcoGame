@@ -191,17 +191,45 @@ document.addEventListener('DOMContentLoaded', () => {
              // 만약 모든 아이템을 시간 만료 전에 찾았다면 timeLeft는 0보다 클 것이고, gamePlayTime은 totalGameTime - timeLeft가 되어야 함.
              gamePlayTime = totalGameTime - timeLeft; // 남은 시간을 제외한 실제 플레이 시간
         } else {
-             // 시간 만료로 게임 종료된 경우, gamePlayTime은 이미 totalGameTime (20초)와 같거나 그 근접한 값.
-             // gamePlayTime은 이미 startTimer에서 매초 증가하고 있으므로, 이 시점에서 최종 play time이 됩니다.
-             // 이 로직은 조금 더 단순화할 수 있습니다. startTimer에서 gamePlayTime++을 하고, timeLeft가 0이 되면 gamePlayTime을 totalGameTime으로 고정하는 방식이 더 정확합니다.
-             // 현재 로직에서는 timeLeft가 0 이하로 내려갈 때 gamePlayTime = totalGameTime; 이 이미 포함되어 있습니다.
+             // 시간 만료로 종료되었다면, gamePlayTime은 이미 totalGameTime과 같거나 그 근접한 값.
+             // startTimer에서 gamePlayTime을 매초 증가시켰으므로 이 시점의 gamePlayTime이 최종값.
+             // 만약 timeLeft가 정확히 0이 되었을 때의 playTime을 원한다면, totalGameTime을 사용.
+             gamePlayTime = totalGameTime; // 시간 초과 시 플레이 시간은 총 게임 시간 (예: 20초)
         }
        
         displayRandomCardAtGameEnd(); // 랜덤 카드 표시 함수 호출
+
+        // *** 새로 추가된 부분: 랭킹 데이터 Firebase에 저장 ***
+        saveRankingData(playerNickname, totalFoundItems, gamePlayTime);
+
         showScreen(resultScreen); // 결과 화면으로 전환
     }
 
+// --- 새로 추가: 랭킹 데이터를 Firebase Firestore에 저장하는 함수 ---
+    async function saveRankingData(nickname, score, playTime) {
+        if (!db) {
+            console.error("Firestore DB 인스턴스를 찾을 수 없습니다.");
+            return;
+        }
 
+        if (!nickname || score === undefined || playTime === undefined) {
+            console.warn("유효하지 않은 랭킹 데이터입니다. 저장하지 않습니다.", { nickname, score, playTime });
+            return;
+        }
+
+        try {
+            // 'rankings' 컬렉션에 새 문서 추가
+            await db.collection("rankings").add({
+                nickname: nickname,
+                score: score,
+                playTime: playTime,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // 서버 타임스탬프 저장
+            });
+            console.log("랭킹 데이터가 성공적으로 저장되었습니다!");
+        } catch (error) {
+            console.error("랭킹 데이터 저장 중 오류 발생: ", error);
+        }
+    }
 
     // --- 랜덤 카드 표시 함수 ---
     /**
@@ -261,63 +289,67 @@ document.addEventListener('DOMContentLoaded', () => {
         foundItemsDisplay.textContent = `찾은 개수: ${totalFoundItems}`;
     }
 
-    // --- 랭킹 표시 함수 (임시 데이터로 구현) ---
-    function displayRankings() {
-        console.log("랭킹 표시 기능이 여기에 구현될 예정입니다.");
+    // --- 랭킹 표시 함수 (Firebase에서 데이터 불러오기) ---
+    async function displayRankings() {
+        console.log("Firebase에서 랭킹 데이터를 불러와 표시합니다.");
         rankingList.innerHTML = ''; // 기존 랭킹 목록 초기화
 
-        // 현재 플레이어의 점수를 포함한 임시 랭킹 데이터 (나중에 서버에서 가져올 것)
-        // 실제 점수 계산: 찾은 아이템이 많을수록 좋고, 플레이 시간이 짧을수록 좋습니다.
-        // 예를 들어, 점수 = (totalFoundItems * 1000) + (totalGameTime - gamePlayTime)
-        // 또는 단순히 찾은 개수와 시간으로 보여줍니다.
-        const currentPlayerScore = {
-            nickname: playerNickname,
-            score: totalFoundItems,
-            time: gamePlayTime // 총 플레이 시간
-        };
-
-        // 임시 랭킹 데이터 (이 부분은 나중에 서버에서 받아온 데이터로 대체됩니다)
-        let rankings = [
-            { nickname: '강한친구', score: 28, time: 18 },
-            { nickname: '빠른별', score: 25, time: 15 },
-            { nickname: '코딩마스터', score: 29, time: 19 },
-            { nickname: '초보게이머', score: 10, time: 20 }
-        ];
-
-        // 현재 플레이어의 점수 추가 (랭킹 계산을 위해)
-        if (currentPlayerScore.nickname) { // 닉네임이 있는 경우만 추가
-            rankings.push(currentPlayerScore);
+        if (!db) {
+            console.error("Firestore DB 인스턴스를 찾을 수 없습니다.");
+            rankingList.innerHTML = '<p>랭킹을 불러올 수 없습니다. 오류를 확인해주세요.</p>';
+            return;
         }
 
-        // 랭킹 정렬: 찾은 아이템 개수가 많을수록 우선, 개수가 같으면 플레이 시간이 짧을수록 우선
-        rankings.sort((a, b) => {
-            if (b.score !== a.score) {
-                return b.score - a.score; // 점수(찾은 개수) 내림차순
+        try {
+            // 'rankings' 컬렉션에서 데이터를 가져옵니다.
+            // 점수(score)는 내림차순으로, 플레이 시간(playTime)은 오름차순으로 정렬 (점수가 높을수록, 시간이 짧을수록 우선)
+            // 상위 10개만 가져오도록 limit(10)을 추가합니다.
+            const querySnapshot = await db.collection("rankings")
+                                            .orderBy("score", "desc")
+                                            .orderBy("playTime", "asc")
+                                            .limit(10) // 상위 10개만 가져옵니다.
+                                            .get();
+
+            const rankings = [];
+            querySnapshot.forEach((doc) => {
+                // 각 문서의 데이터를 가져와 배열에 추가합니다.
+                rankings.push(doc.data());
+            });
+
+            // 현재 플레이어의 점수를 랭킹 리스트에 추가 (Firebase에 저장 후 불러왔으므로 필요 없을 수 있지만, 현재 세션을 위해)
+            // 이미 저장된 데이터가 불러와졌으므로, 이 부분은 제거하거나 플레이어 본인의 랭크를 별도로 표시할 때 활용할 수 있습니다.
+            // 여기서는 불러온 데이터만으로 랭킹을 표시합니다.
+
+            if (rankings.length === 0) {
+                rankingList.innerHTML = '<p class="no-ranking-data">아직 랭킹 데이터가 없습니다.<br>게임을 플레이하고 첫 번째 랭킹에 도전해보세요!</p>';
+                return;
             }
-            return a.time - b.time; // 점수 같으면 시간 오름차순 (짧을수록 좋음)
-        });
 
-        // 랭킹 목록 생성 (상위 10개만 표시)
-        for (let i = 0; i < Math.min(rankings.length, 10); i++) {
-            const ranking = rankings[i];
-            const rankingItem = document.createElement('div');
-            rankingItem.classList.add('ranking-item');
+            // 랭킹 목록을 HTML로 생성하여 추가
+            rankings.forEach((ranking, index) => {
+                const rankingItem = document.createElement('div');
+                rankingItem.classList.add('ranking-item');
 
-            let rankDisplay = `${i + 1}`;
-            // 고객님의 이미지에 1, 2, 3위는 메달 아이콘이 있으므로, 실제 텍스트 등수는 4위부터 시작할 수 있도록 조정
-            // HTML/CSS에서 메달 이미지를 고정하고, 4위부터 텍스트를 채워넣는 식으로 구현할 수 있습니다.
-            // 여기서는 단순화하여 1위부터 텍스트 등수를 표시합니다. (이미지 위에 텍스트를 배치)
+                // 등수 번호는 CSS로 숨기기로 했으므로, 실제 보이는 텍스트는 닉네임과 점수만
+                // 하지만 HTML 구조는 유지하여 나중에 등수 아이콘을 넣거나 할 때 활용 가능
+                const rankDisplay = index + 1; // 1부터 시작하는 등수
 
-            rankingItem.innerHTML = `
-                <span class="rank">${rankDisplay}</span>
-                <span class="nickname">${ranking.nickname}</span>
-                <span class="score">${ranking.score}개 (${ranking.time}초)</span>
-            `;
-            rankingList.appendChild(rankingItem);
+                rankingItem.innerHTML = `
+                    <span class="rank">${rankDisplay}</span>
+                    <span class="nickname">${ranking.nickname}</span>
+                    <span class="score">${ranking.score}개 (${ranking.playTime}초)</span>
+                `;
+                rankingList.appendChild(rankingItem);
+            });
+
+            console.log("랭킹 데이터 불러오기 및 표시 완료.");
+
+        } catch (error) {
+            console.error("랭킹 데이터를 불러오는 중 오류 발생: ", error);
+            rankingList.innerHTML = '<p>랭킹 데이터를 불러오지 못했습니다. 다시 시도해주세요.</p>';
         }
-
-        console.log(`최종 점수: ${totalFoundItems}개, 플레이 시간: ${gamePlayTime}초`);
     }
+    
 
 
     // --- 이벤트 리스너 ---
