@@ -128,9 +128,9 @@ body {
     line-height: 1.6;
 } */
 
-/* 다시 시작하기 버튼 스타일 */
-.restart-button {
-    background-color: #6c5ce7; /* 보라색 계열 */
+
+.ranking-button { /* 새로 추가된 랭킹 보기 버튼 스타일 */
+    background-color: #007bff; /* 랭킹과 어울리는 파란색 계열 */
     color: white;
     padding: 15px 40px;
     border: none;
@@ -139,9 +139,21 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    font-family: 'Jua', sans-serif; /* 폰트 적용 */
+    font-family: 'Jua', sans-serif;
     z-index: 5;
+    margin-top: 20px; /* 카드와의 간격 */
 }
+
+.ranking-button:hover {
+    background-color: #0056b3; /* 호버 색상 변경 */
+    transform: translateY(-2px);
+}
+
+/*
+.restart-button {
+    display: none; // 이전에 사용하던 버튼이 있다면 숨기거나 제거
+}
+*/
 
 .restart-button:hover {
     background-color: #5a4bcf;
@@ -263,10 +275,19 @@ body {
 
 /* 게임 플레이 화면 스타일 */
 #game-play-screen {
-    /* section.screen의 기본 스타일을 상속받으므로 여기에 추가적인 flex 속성을 주지 않아도 됩니다. */
-    /* background-image는 script.js에서 동적으로 설정됩니다. */
-    overflow: hidden; /* 아이템이 보드 밖으로 나가지 않도록 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* <-- 100vw에서 100%로 변경 */
+    height: 100%; /* <-- 100vh에서 100%로 변경 */
+    background-color: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
+
 
 /* 게임 보드 스타일 */
 #game-board {
@@ -334,4 +355,119 @@ body {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     min-width: 60px; /* 숫자가 한 자리로 줄어도 크기가 많이 변하지 않게 */
     text-align: center;
+}
+
+/* --- 랭킹 화면 관련 스타일 --- */
+
+#rankingScreen {
+    /* section.screen의 기본 스타일을 상속받으므로 여기에 추가적인 flex 속성을 주지 않아도 됩니다. */
+    /* 랭킹 배경 이미지가 이미 HTML에 추가되었으므로 여기서는 배경 설정은 필요 없습니다. */
+}
+
+/* 랭킹 배경 이미지의 추가 스타일 (필요시) */
+.ranking-background {
+    /* background-image 클래스가 이미 width: 100%; height: 100%; object-fit: cover; 등을 가지고 있으므로 추가 스타일은 최소화 */
+    z-index: 1; /* 다른 콘텐츠 위에 오도록 */
+    position: absolute; /* .screen에 이미 absolute 있으나 명시적으로 */
+    top: 0;
+    left: 0;
+}
+
+/* 랭킹 콘텐츠 오버레이 */
+.ranking-overlay {
+    position: relative;
+    z-index: 2; /* 배경 이미지 위에 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 수직 중앙 정렬 (필요시 조정) */
+    align-items: center; /* 수평 중앙 정렬 (필요시 조정) */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 랭킹 목록 컨테이너 (이미지 내부에 랭킹 리스트가 들어갈 영역) */
+.ranking-list-container {
+    position: absolute;
+    /* top 값을 조절하여 전체적으로 위로 올립니다. 이전보다 더 위로 조정 */
+    top: 24%; /* 이 값을 조절하여 리스트 전체를 위로 올리세요 (예: 25.5% -> 24%) */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; /* 이미지의 랭킹 영역에 맞게 조정 (필요시 미세 조정) */
+    height: 60%; /* 이미지의 랭킹 영역에 맞게 조정 (필요시 미세 조정) */
+    /* background-color: rgba(255, 0, 0, 0.2); (디버깅용) */
+    overflow-y: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 실제 랭킹 목록 아이템들을 담을 컨테이너 */
+.ranking-list {
+    width: 100%; /* .ranking-list-container의 100% */
+}
+
+/* 각 랭킹 아이템 (하나의 랭킹 줄) 스타일 */
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 1.3em;
+    color: #333;
+    /* 줄 구분선 조정: 이미지의 흰색 선 안에 들어가도록 top/bottom padding과 line-height를 고려해야 함 */
+    /* 기존 border-bottom: 1px solid #eee; 는 유지합니다. */
+    border-bottom: 1px solid #eee; /* 흰색 배경에 줄을 만듭니다. */
+    width: 95%; /* 랭킹 리스트 컨테이너에 약간의 좌우 여백을 주면서 줄에 맞춥니다. */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+.ranking-item:first-child { /* 1위 항목의 상단 패딩 또는 위치 조정 */
+    padding-top: 15px; /* 첫 번째 항목이 이미지 메달과 겹치지 않도록 조정 */
+}
+
+.ranking-item:last-child {
+    border-bottom: none;
+}
+
+.ranking-item .rank {
+    width: 15%; /* 등수 컬럼 너비는 유지 */
+    text-align: center;
+    font-weight: bold;
+    visibility: hidden; /* 등수 텍스트를 숨깁니다 */
+    /* opacity: 0; */ /* 투명하게 할 수도 있지만, 레이아웃에 영향을 주지 않는 visibility: hidden이 더 적합 */
+}
+
+.ranking-item .nickname {
+    width: 45%; /* 닉네임 컬럼 너비 */
+    text-align: left;
+    white-space: nowrap; /* 닉네임이 길어도 줄바꿈 안되게 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 넘치는 텍스트 ... 처리 */
+    padding-left: 5px; /* 약간의 패딩 */
+}
+
+.ranking-item .score {
+    width: 40%; /* 점수 컬럼 너비 */
+    text-align: right;
+    padding-right: 5px; /* 약간의 패딩 */
+}
+
+/* 첫, 둘, 셋째 등수 아이콘 (이미지에 있으므로 실제 텍스트 등수는 4위부터) */
+/* 1등, 2등, 3등은 이미지에 고정되어 있으므로, 4위부터는 숫자로 표시 */
+/* CSS에서 1,2,3등 아이콘은 구현하지 않습니다. 이미지 위에 텍스트를 오버레이할 것임. */
+
+/* 처음으로 버튼 스타일 (랭킹 보기 버튼과 유사하게) */
+.ranking-button.return-button {
+    background-color: #6c5ce7; /* 보라색 계열 */
+    position: absolute; /* 배경 이미지 하단에 고정 */
+    bottom: 30px; /* 이미지 하단으로부터의 간격 */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 30px; /* 패딩 조정 */
+    font-size: 1.2em; /* 폰트 크기 조정 */
+}
+
+.ranking-button.return-button:hover {
+    background-color: #5a4bcf;
+    transform: translate(-50%, -2px);
 }

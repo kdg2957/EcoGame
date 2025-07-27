@@ -14,11 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const gamePlayScreen = document.getElementById('game-play-screen'); // game-play-screen 변수 추가
     const resultScreen = document.getElementById('resultScreen'); // 결과 화면 변수 추가
     const rankingScreen = document.getElementById('rankingScreen'); // 랭킹 화면 변수 추가 (나중에 사용)
-
+    const rankingList = document.getElementById('rankingList'); // 랭킹 목록을 표시할 DOM 요소 추가
+    const returnToNicknameButton = document.getElementById('returnToNicknameButton'); // 처음으로 버튼 추가
+    
     const timerDisplay = document.getElementById('timerDisplay'); // 타이머 DOM 요소
     // --- 새로 추가된 DOM 요소 변수 ---
     const foundItemsDisplay = document.getElementById('foundItemsDisplay'); // 찾은 아이템 개수 DOM 요소 추가
-    const restartButton = document.getElementById('restartButton'); // 재시작 버튼 변수 추가
+    const viewRankingButton = document.getElementById('viewRankingButton'); // 랭킹 보기 버튼 변수 추가
+
+    
 
 
     let currentMapIndex = 0; // 현재 맵 인덱스 (0: 정글, 1: 바다, 2: 도시)
@@ -28,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const totalGameTime = 20; // 전체 게임 시간 (초)
     let timeLeft = totalGameTime; // 남은 시간
+    let gamePlayTime = 0; // 새로 추가: 게임 플레이 시간 (초 단위)
     let timerInterval; // setInterval을 저장할 변수
 
     // 맵별 배경 이미지 경로 (배경 순서: 정글, 바다, 도시)
@@ -79,37 +84,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 타이머 관련 함수 ---
     function startTimer() {
-        // 이미 타이머가 실행 중이면 중복 실행 방지
         if (timerInterval) {
             clearInterval(timerInterval);
         }
 
+        timeLeft = totalGameTime; // 타이머 초기화 (게임 시작 시)
+        gamePlayTime = 0; // 플레이 시간 초기화 (게임 시작 시)
         timerDisplay.textContent = timeLeft; // 초기 시간 표시
 
         timerInterval = setInterval(() => {
             timeLeft--;
+            gamePlayTime++; // 매 초 플레이 시간 증가
             timerDisplay.textContent = timeLeft;
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timerDisplay.textContent = "0";
-                // 시간 초과 시 게임 종료 처리
+                gamePlayTime = totalGameTime; // 시간 초과 시 플레이 시간은 총 게임 시간과 같음
                 endGameProcess();
             }
-        }, 1000); // 1초마다 감소
+        }, 1000);
     }
 
     function stopTimer() {
         clearInterval(timerInterval);
     }
 
-    // 게임 종료 후 닉네임 화면으로 돌아가는 함수 (타이머 중지 및 초기화 포함)
-    // 이 함수는 '다시 시작하기' 버튼에 연결됩니다.
+    // 게임 종료 후 닉네임 화면으로 돌아가는 함수 (더 이상 restartButton과 직접 연결되지 않음)
+    // 이 함수는 '랭킹 화면' 등에서 게임 재시작 버튼에 연결될 수 있습니다.
     function resetGameAndReturnToNickname() {
         stopTimer(); // 타이머 중지
-        resetGame(); // 게임 상태 초기화 (여기서 foundItemsDisplay도 초기화됨)
+        resetGame(); // 게임 상태 초기화
         showScreen(nicknameScreen); // 닉네임 화면으로 전환
-        // 닉네임 입력 필드 초기화 및 포커스
         nicknameInput.value = '';
         nicknameInput.focus();
     }
@@ -179,10 +185,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 게임 종료 시 호출될 중앙 처리 함수 ---
     function endGameProcess() {
         stopTimer(); // 타이머 중지
+        // 플레이어가 모든 아이템을 다 찾아서 게임이 종료된 경우
+        if (totalFoundItems === mapItems.length * itemsPerMap) {
+             // gamePlayTime은 이미 startTimer에서 매초 증가하고 있으므로, 이 시점에서 최종 play time이 됩니다.
+             // 만약 모든 아이템을 시간 만료 전에 찾았다면 timeLeft는 0보다 클 것이고, gamePlayTime은 totalGameTime - timeLeft가 되어야 함.
+             gamePlayTime = totalGameTime - timeLeft; // 남은 시간을 제외한 실제 플레이 시간
+        } else {
+             // 시간 만료로 게임 종료된 경우, gamePlayTime은 이미 totalGameTime (20초)와 같거나 그 근접한 값.
+             // gamePlayTime은 이미 startTimer에서 매초 증가하고 있으므로, 이 시점에서 최종 play time이 됩니다.
+             // 이 로직은 조금 더 단순화할 수 있습니다. startTimer에서 gamePlayTime++을 하고, timeLeft가 0이 되면 gamePlayTime을 totalGameTime으로 고정하는 방식이 더 정확합니다.
+             // 현재 로직에서는 timeLeft가 0 이하로 내려갈 때 gamePlayTime = totalGameTime; 이 이미 포함되어 있습니다.
+        }
+       
         displayRandomCardAtGameEnd(); // 랜덤 카드 표시 함수 호출
         showScreen(resultScreen); // 결과 화면으로 전환
-        // 여기서는 resetGame()을 호출하지 않습니다. 사용자가 '다시 시작하기' 버튼을 누를 때까지 결과 화면에 머무릅니다.
     }
+
 
 
     // --- 랜덤 카드 표시 함수 ---
@@ -243,6 +261,64 @@ document.addEventListener('DOMContentLoaded', () => {
         foundItemsDisplay.textContent = `찾은 개수: ${totalFoundItems}`;
     }
 
+    // --- 랭킹 표시 함수 (임시 데이터로 구현) ---
+    function displayRankings() {
+        console.log("랭킹 표시 기능이 여기에 구현될 예정입니다.");
+        rankingList.innerHTML = ''; // 기존 랭킹 목록 초기화
+
+        // 현재 플레이어의 점수를 포함한 임시 랭킹 데이터 (나중에 서버에서 가져올 것)
+        // 실제 점수 계산: 찾은 아이템이 많을수록 좋고, 플레이 시간이 짧을수록 좋습니다.
+        // 예를 들어, 점수 = (totalFoundItems * 1000) + (totalGameTime - gamePlayTime)
+        // 또는 단순히 찾은 개수와 시간으로 보여줍니다.
+        const currentPlayerScore = {
+            nickname: playerNickname,
+            score: totalFoundItems,
+            time: gamePlayTime // 총 플레이 시간
+        };
+
+        // 임시 랭킹 데이터 (이 부분은 나중에 서버에서 받아온 데이터로 대체됩니다)
+        let rankings = [
+            { nickname: '강한친구', score: 28, time: 18 },
+            { nickname: '빠른별', score: 25, time: 15 },
+            { nickname: '코딩마스터', score: 29, time: 19 },
+            { nickname: '초보게이머', score: 10, time: 20 }
+        ];
+
+        // 현재 플레이어의 점수 추가 (랭킹 계산을 위해)
+        if (currentPlayerScore.nickname) { // 닉네임이 있는 경우만 추가
+            rankings.push(currentPlayerScore);
+        }
+
+        // 랭킹 정렬: 찾은 아이템 개수가 많을수록 우선, 개수가 같으면 플레이 시간이 짧을수록 우선
+        rankings.sort((a, b) => {
+            if (b.score !== a.score) {
+                return b.score - a.score; // 점수(찾은 개수) 내림차순
+            }
+            return a.time - b.time; // 점수 같으면 시간 오름차순 (짧을수록 좋음)
+        });
+
+        // 랭킹 목록 생성 (상위 10개만 표시)
+        for (let i = 0; i < Math.min(rankings.length, 10); i++) {
+            const ranking = rankings[i];
+            const rankingItem = document.createElement('div');
+            rankingItem.classList.add('ranking-item');
+
+            let rankDisplay = `${i + 1}`;
+            // 고객님의 이미지에 1, 2, 3위는 메달 아이콘이 있으므로, 실제 텍스트 등수는 4위부터 시작할 수 있도록 조정
+            // HTML/CSS에서 메달 이미지를 고정하고, 4위부터 텍스트를 채워넣는 식으로 구현할 수 있습니다.
+            // 여기서는 단순화하여 1위부터 텍스트 등수를 표시합니다. (이미지 위에 텍스트를 배치)
+
+            rankingItem.innerHTML = `
+                <span class="rank">${rankDisplay}</span>
+                <span class="nickname">${ranking.nickname}</span>
+                <span class="score">${ranking.score}개 (${ranking.time}초)</span>
+            `;
+            rankingList.appendChild(rankingItem);
+        }
+
+        console.log(`최종 점수: ${totalFoundItems}개, 플레이 시간: ${gamePlayTime}초`);
+    }
+
 
     // --- 이벤트 리스너 ---
 
@@ -278,13 +354,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 새로 추가: 재시작 버튼 클릭 시 게임 초기화 및 닉네임 화면으로 이동
-    restartButton.addEventListener('click', () => {
-        console.log("다시 시작하기 버튼 클릭!");
-        resetGameAndReturnToNickname();
+    viewRankingButton.addEventListener('click', () => {
+        console.log("랭킹 보기 버튼 클릭!");
+        showScreen(rankingScreen); // 랭킹 화면으로 전환
+        displayRankings(); // 랭킹을 표시하는 함수 호출 (이때 현재 플레이어의 점수도 포함)
     });
+
+    // 새로 추가: '처음으로' 버튼 클릭 시 닉네임 화면으로 돌아가기
+    returnToNicknameButton.addEventListener('click', () => {
+        console.log("처음으로 버튼 클릭!");
+        resetGameAndReturnToNickname(); // 게임 초기화 및 닉네임 화면으로 이동
+    });
+
 
     // 초기 로드 시 화면 설정
     showScreen(nicknameScreen); // 초기 화면은 닉네임 입력 화면
     updateFoundItemsDisplay(); // 페이지 로드 시 초기값 표시 (0)
 });
+

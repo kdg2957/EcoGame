@@ -33,7 +33,7 @@
             <div id="foundItemsDisplay">찾은 개수: 0</div>
             <div id="game-board">
             </div>
-            </section>
+        </section>
 
         <section id="resultScreen" class="screen">
             <div class="content-overlay result-overlay">
@@ -49,12 +49,19 @@
                 <div id="card4" class="game-end-card">
                     <img src="" alt="보상 카드 4" class="card-image">
                 </div>
-                <button id="restartButton" class="restart-button">다시 시작하기</button>
+                <button id="viewRankingButton" class="ranking-button">랭킹 보기</button>
             </div>
         </section>
 
         <section id="rankingScreen" class="screen">
-            <p>랭킹 화면</p>
+            <img src="images/KakaoTalk_20250721_121941384.png" alt="랭킹 순위 배경" class="background-image ranking-background">
+            <div class="content-overlay ranking-overlay">
+                <div class="ranking-list-container">
+                    <div class="ranking-list" id="rankingList">
+                        </div>
+                </div>
+                 <button id="returnToNicknameButton" class="ranking-button return-button">처음으로</button>
+            </div>
         </section>
     </div>
 
