@@ -110,15 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
     }
 
-    // 게임 종료 후 닉네임 화면으로 돌아가는 함수 (더 이상 restartButton과 직접 연결되지 않음)
-    // 이 함수는 '랭킹 화면' 등에서 게임 재시작 버튼에 연결될 수 있습니다.
-    function resetGameAndReturnToNickname() {
-        stopTimer(); // 타이머 중지
-        resetGame(); // 게임 상태 초기화
-        showScreen(nicknameScreen); // 닉네임 화면으로 전환
-        nicknameInput.value = '';
-        nicknameInput.focus();
-    }
+    
 
     // 게임 보드 초기화 및 아이템 배치
     function initializeGameBoard() {
@@ -390,12 +382,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("랭킹 보기 버튼 클릭!");
         showScreen(rankingScreen); // 랭킹 화면으로 전환
         displayRankings(); // 랭킹을 표시하는 함수 호출 (이때 현재 플레이어의 점수도 포함)
-    });
-
-    // 새로 추가: '처음으로' 버튼 클릭 시 닉네임 화면으로 돌아가기
-    returnToNicknameButton.addEventListener('click', () => {
-        console.log("처음으로 버튼 클릭!");
-        resetGameAndReturnToNickname(); // 게임 초기화 및 닉네임 화면으로 이동
     });
 
 

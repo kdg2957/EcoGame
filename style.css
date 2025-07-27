@@ -395,7 +395,6 @@ body {
     width: 80%; /* 이미지의 랭킹 영역에 맞게 조정 (필요시 미세 조정) */
     height: 60%; /* 이미지의 랭킹 영역에 맞게 조정 (필요시 미세 조정) */
     /* background-color: rgba(255, 0, 0, 0.2); (디버깅용) */
-    overflow-y: auto;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -456,18 +455,18 @@ body {
 /* 1등, 2등, 3등은 이미지에 고정되어 있으므로, 4위부터는 숫자로 표시 */
 /* CSS에서 1,2,3등 아이콘은 구현하지 않습니다. 이미지 위에 텍스트를 오버레이할 것임. */
 
-/* 처음으로 버튼 스타일 (랭킹 보기 버튼과 유사하게) */
-.ranking-button.return-button {
-    background-color: #6c5ce7; /* 보라색 계열 */
-    position: absolute; /* 배경 이미지 하단에 고정 */
-    bottom: 30px; /* 이미지 하단으로부터의 간격 */
+/* 기존 return-button 관련 스타일 제거 */
+/* .ranking-button.return-button {
+    background-color: #6c5ce7; 
+    position: absolute; 
+    bottom: 30px; 
     left: 50%;
     transform: translateX(-50%);
-    padding: 12px 30px; /* 패딩 조정 */
-    font-size: 1.2em; /* 폰트 크기 조정 */
+    padding: 12px 30px; 
+    font-size: 1.2em; 
 }
 
 .ranking-button.return-button:hover {
     background-color: #5a4bcf;
     transform: translate(-50%, -2px);
-}
+} */
