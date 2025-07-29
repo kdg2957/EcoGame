@@ -405,18 +405,18 @@ body {
 /* 랭킹 목록 컨테이너 (이미지 내부에 랭킹 리스트가 들어갈 영역) */
 .ranking-list-container {
     position: absolute;
-    /* top 값을 조절하여 전체적으로 위로 올립니다. 이전보다 더 위로 조정 */
     top: 24%; /* 이 값을 조절하여 리스트 전체를 위로 올리세요 (예: 25.5% -> 24%) */
     left: 50%;
     transform: translateX(-50%);
     width: 80%; /* 이미지의 랭킹 영역에 맞게 조정 (필요시 미세 조정) */
-    height: 60%; /* 이미지의 랭킹 영역에 맞게 조정 (필요시 미세 조정) */
-    /* background-color: rgba(255, 0, 0, 0.2); (디버깅용) */
+    height: 57%; /* 높이를 60%에서 55%로 줄여서 전체적으로 간격을 압축 (미세 조정 가능) */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
+    
 }
+
 
 /* 실제 랭킹 목록 아이템들을 담을 컨테이너 */
 .ranking-list {
@@ -426,46 +426,68 @@ body {
 /* 각 랭킹 아이템 (하나의 랭킹 줄) 스타일 */
 .ranking-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    font-size: 1.3em;
+    /* 상하 패딩을 10px에서 0.8rem (약 8px)으로 줄여 간격 압축 */
+    padding: 0.6rem 0; /* 상하 0.8rem, 좌우 0 (조절 가능) */
+    font-size: 1.3em; /* 기본 폰트 크기 유지 */
     color: #333;
-    /* 줄 구분선 조정: 이미지의 흰색 선 안에 들어가도록 top/bottom padding과 line-height를 고려해야 함 */
-    /* 기존 border-bottom: 1px solid #eee; 는 유지합니다. */
-    border-bottom: 1px solid #eee; /* 흰색 배경에 줄을 만듭니다. */
-    width: 95%; /* 랭킹 리스트 컨테이너에 약간의 좌우 여백을 주면서 줄에 맞춥니다. */
-    margin: 0 auto; /* 중앙 정렬 */
+    border-bottom: 1px solid #eee;
+    width: 95%;
+    margin: 0 auto;
+    gap: 1%; /* 요소들 사이에 작은 간격 유지 */
 }
-.ranking-item:first-child { /* 1위 항목의 상단 패딩 또는 위치 조정 */
-    padding-top: 15px; /* 첫 번째 항목이 이미지 메달과 겹치지 않도록 조정 */
+.ranking-item:first-child {
+    padding-top: 1.1rem; /* 첫 번째 항목의 상단 패딩 (이미지 간격 고려) */
 }
 
 .ranking-item:last-child {
     border-bottom: none;
 }
 
+/* 닉네임, 점수 컬럼의 너비 배분 조정 */
 .ranking-item .rank {
-    width: 15%; /* 등수 컬럼 너비는 유지 */
+    flex-basis: 15%;
+    flex-shrink: 0;
     text-align: center;
     font-weight: bold;
-    visibility: hidden; /* 등수 텍스트를 숨깁니다 */
-    /* opacity: 0; */ /* 투명하게 할 수도 있지만, 레이아웃에 영향을 주지 않는 visibility: hidden이 더 적합 */
+    visibility: hidden;
+    /* 폰트 크기 조정 (화면 너비에 반응하도록) */
+    font-size: clamp(0.9rem, 2.5vw, 1.3em); /* 최소 0.9rem, 최대 1.3em, 뷰포트 너비의 2.5% */
 }
 
 .ranking-item .nickname {
-    width: 45%; /* 닉네임 컬럼 너비 */
+    flex-basis: 40%;
+    flex-grow: 1;
+    flex-shrink: 1;
     text-align: left;
-    white-space: nowrap; /* 닉네임이 길어도 줄바꿈 안되게 */
-    overflow: hidden; /* 넘치는 텍스트 숨김 */
-    text-overflow: ellipsis; /* 넘치는 텍스트 ... 처리 */
-    padding-left: 5px; /* 약간의 패딩 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 0.5rem;
+    padding-right: 0.2rem;
+    /* 폰트 크기 조정 (화면 너비에 반응하도록) */
+    font-size: clamp(0.9rem, 2.8vw, 1.3em); /* 최소 0.9rem, 최대 1.3em, 뷰포트 너비의 2.8% */
 }
 
 .ranking-item .score {
-    width: 40%; /* 점수 컬럼 너비 */
+    flex-basis: 45%;
+    flex-grow: 1;
+    flex-shrink: 0;
     text-align: right;
-    padding-right: 5px; /* 약간의 패딩 */
+    padding-right: 0.5rem;
+    padding-left: 0.2rem;
+    /* 폰트 크기 조정 (화면 너비에 반응하도록) */
+    font-size: clamp(0.9rem, 2.5vw, 1.3em); /* 최소 0.9rem, 최대 1.3em, 뷰포트 너비의 2.5% */
+}
+
+
+/* 랭킹 데이터가 없을 때 메시지 스타일 */
+.no-ranking-data {
+    color: #666;
+    font-size: clamp(1rem, 3vw, 1.2em); /* 폰트 크기 조정 */
+    text-align: center;
+    margin-top: 50px;
+    line-height: 1.5;
 }
 
 /* 첫, 둘, 셋째 등수 아이콘 (이미지에 있으므로 실제 텍스트 등수는 4위부터) */
