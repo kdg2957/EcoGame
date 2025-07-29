@@ -227,16 +227,20 @@ body {
 /* 게임 설명 화면에 표시될 닉네임 스타일 (이미지 위에 정확히 오버레이) */
 .description-nickname {
     position: absolute;
-    top: 28.5%; 
-    left: 12.5%; 
-    transform: translateX(0);
+    /* --- 하얀 네모가 있던 위치 속성들을 닉네임 텍스트에 적용 --- */
+    top: 32%; /* 이전 하얀 네모의 top 위치 */
+    left: 25%; /* 이전 하얀 네모의 left 위치 */
+    transform: translateX(-60%); /* 이전 하얀 네모의 transform 위치 */
+    
     color: #ffd700; /* 이미지에 있는 텍스트 색상 (노란색) */
     font-family: 'GalmuriMono9 Regular', sans-serif; /* 폰트 적용 */
-    font-size: 2.3em; 
+    font-size: 1.5em; /* 요청하신 폰트 크기 유지 */
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     white-space: nowrap; 
     z-index: 3;
+
+    
 }
 
 /* 게임 시작 버튼 스타일 (이미지 위에 정확히 오버레이) */

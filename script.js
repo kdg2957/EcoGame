@@ -370,6 +370,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (playerNickname.length >= 1 && playerNickname.length <= 4) {
             console.log("플레이어 닉네임:", playerNickname);
+
+            // --- 추가될 부분 시작 ---
+            // 닉네임 길이에 따라 배경 너비 동적 조절
+            // 폰트 크기(2.3em)와 패딩(좌우 15px)을 고려하여 너비를 대략적으로 계산합니다.
+            // 4글자 기준: (4글자 * 대략적인 글자 폭) + 좌우 패딩 + 약간의 여유
+            // 'em' 단위는 부모 폰트 크기에 따라 달라지므로, 여기서는 'rem' 또는 'px'로 변환하여 사용하거나,
+            // 간단하게 글자 수에 비례하는 값을 설정할 수 있습니다.
+            
+            
+            
             
             displayedNickname.textContent = `${playerNickname}`; 
             
