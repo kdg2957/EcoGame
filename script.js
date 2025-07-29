@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+// 뷰포트 높이 계산 및 적용 (모바일 하단 잘림 방지)
+    function setAppHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        document.getElementById('app').style.height = `${window.innerHeight}px`;
+        document.body.style.minHeight = `${window.innerHeight}px`;
+    }
+
+    // 초기 로드 시 높이 설정
+    setAppHeight();
+
+    // 화면 크기 변경 (특히 모바일에서 주소창 나타나거나 사라질 때) 시 높이 재설정
+    window.addEventListener('resize', setAppHeight);
+    window.addEventListener('orientationchange', setAppHeight);
+
     // 기존 변수들
     const nicknameScreen = document.getElementById('nicknameScreen');
     const descriptionScreen = document.getElementById('descriptionScreen');
