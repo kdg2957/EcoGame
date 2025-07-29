@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMapIndex = 0; // 현재 맵 인덱스 (0: 정글, 1: 바다, 2: 도시)
     let foundItemsCount = 0; // 현재 맵에서 찾은 아이템 개수 (맵 전환 시 초기화)
     let totalFoundItems = 0; // 전체 게임에서 찾은 총 아이템 개수 (게임 전체에서 유지)
-    const itemsPerMap = 15; // 맵 당 숨은 아이템 개수
+    const itemsPerMap = 12; // 맵 당 숨은 아이템 개수
 
     const totalGameTime = 20; // 전체 게임 시간 (초)
     let timeLeft = totalGameTime; // 남은 시간
@@ -48,19 +48,19 @@ document.addEventListener('DOMContentLoaded', () => {
         [
             './images/cho1.png', './images/cho2.png', './images/cho3.png', './images/cho4.png', './images/cho5.png',
             './images/cho6.png', './images/cho7.png', './images/cho8.png', './images/cho9.png', './images/cho10.png',
-            './images/cho1.png', './images/cho2.png', './images/cho3.png', './images/cho4.png', './images/cho5.png'
+            './images/cho1.png', './images/cho2.png'
         ],
         // 두 번째 맵 (바다) 아이템
         [
             './images/pa1.png', './images/pa2.png', './images/pa3.png', './images/pa4.png', './images/pa5.png',
             './images/pa6.png', './images/pa7.png', './images/pa8.png', './images/pa9.png', './images/pa10.png',
-            './images/pa1.png', './images/pa2.png', './images/pa3.png', './images/pa4.png', './images/pa5.png'
+            './images/pa1.png', './images/pa2.png'
         ],
         // 세 번째 맵 (도시) 아이템
         [
             './images/bo1.png', './images/bo2.png', './images/bo3.png', './images/bo4.png', './images/bo5.png',
             './images/bo6.png', './images/bo7.png', './images/bo8.png', './images/bo9.png', './images/bo10.png',
-            './images/bo1.png', './images/bo2.png', './images/bo3.png', './images/bo4.png', './images/bo5.png'
+            './images/bo1.png', './images/bo2.png'
         ]
     ];
 
