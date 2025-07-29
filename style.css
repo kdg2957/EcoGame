@@ -161,7 +161,7 @@ body {
 }
 
 /* 닉네임 입력 화면의 컨테이너 스타일 */
-.nickname-container {
+/* .nickname-container {
     background-color: rgba(255, 255, 255, 0.85);
     border: 5px solid #ccc;
     border-radius: 20px;
@@ -173,9 +173,9 @@ body {
     position: absolute;
     top: 60%;
     left: 50%; /* 가로 중앙 정렬 */
-    transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
-    width: 90%;
-}
+    /*transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
+    /*width: 90%;
+} */
 
 /* 닉네임 글자 이미지 스타일 */
 .nickname-title {
@@ -198,7 +198,14 @@ body {
     text-align: center;
     box-sizing: border-box;
     font-family: 'GalmuriMono9 Regular', sans-serif; /* 폰트 적용 */
+    /* --- 위치 조정 --- */
+    position: absolute; /* 절대 위치 지정 */
+    top: 44%; /* 위로 더 올리기 (원하는 위치에 따라 조절) */
+    left: 50%; /* 가로 중앙 정렬 */
+    transform: translateX(-50%); /* 정확한 가로 중앙 정렬 */
+    max-width: 300px; /* 닉네임 컨테이너의 max-width와 유사하게 설정하여 크기 제어 */
 }
+
 
 #startButton {
     background-image: url('images/start_button_bg.png'); /* 이미지 경로 수정 */
@@ -210,18 +217,24 @@ body {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* transition 속성은 유지해야 애니메이션 효과가 부드럽게 적용됩니다. */
     width: 80%;
     max-width: 300px;
-    margin-top: 20px;
+    /* margin-top: 20px; */ /* 이 마진은 이제 직접적인 위치에 의해 대체됩니다. */
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     font-family: 'GalmuriMono9 Regular', sans-serif; /* 폰트 적용 */
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+
+    /* --- 위치 조정 (이 부분은 유지) --- */
+    position: absolute; /* 절대 위치 지정 */
+    top: 75%; /* 아래로 더 내리기 (원하는 위치에 따라 조절) */
+    left: 50%; /* 가로 중앙 정렬 */
+    transform: translateX(-50%); /* 정확한 가로 중앙 정렬 */
 }
 
 #startButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    background-color: #e0b800;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3); /* 그림자 효과 유지 */
 }
 
 /* 게임 설명 화면에 표시될 닉네임 스타일 (이미지 위에 정확히 오버레이) */
