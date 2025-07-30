@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalFoundItems = 0; // 전체 게임에서 찾은 총 아이템 개수 (게임 전체에서 유지)
     const itemsPerMap = 15; // 맵 당 숨은 아이템 개수
 
-    const totalGameTime = 20; // 전체 게임 시간 (초)
+    const totalGameTime = 30; // 전체 게임 시간 (초)
     let timeLeft = totalGameTime; // 남은 시간
     let gamePlayTime = 0; // 새로 추가: 게임 플레이 시간 (초 단위)
     let timerInterval; // setInterval을 저장할 변수
@@ -166,6 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.style.opacity = '0'; // 아이템을 숨김
                     foundItemsCount++; // 현재 맵에서 찾은 아이템 수 증가
                     totalFoundItems++; // 전체 게임에서 찾은 아이템 수 증가 (핵심!)
+
+                    item.style.pointerEvents = 'none'; // 클릭 이벤트 비활성화
 
                     updateFoundItemsDisplay(); // 찾은 아이템 개수 디스플레이 업데이트
 
