@@ -313,6 +313,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // 랭킹 이미지 경로 정의
+        const rankImages = {
+            1: './images/medel1.png',   // 1등 이미지
+            2: './images/medel2.png',  // 2등 이미지
+            3: './images/medel3.png'   // 3등 이미지
+        };
+
         try {
             // 'rankings' 컬렉션에서 데이터를 가져옵니다.
             // 점수(score)는 내림차순으로, 플레이 시간(playTime)은 오름차순으로 정렬 (점수가 높을수록, 시간이 짧을수록 우선)
@@ -338,17 +345,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 랭킹 목록을 HTML로 생성하여 추가
+                // 랭킹 목록을 HTML로 생성하여 추가
             rankings.forEach((ranking, index) => {
                 const rankingItem = document.createElement('div');
                 rankingItem.classList.add('ranking-item');
 
-                // 등수 번호는 CSS로 숨기기로 했으므로, 실제 보이는 텍스트는 닉네임과 점수만
-                // 하지만 HTML 구조는 유지하여 나중에 등수 아이콘을 넣거나 할 때 활용 가능
                 const rankDisplay = index + 1; // 1부터 시작하는 등수
+                let rankContent = '';
+
+                // 1, 2, 3등은 이미지로, 나머지는 숫자로 표시
+                if (rankDisplay >= 1 && rankDisplay <= 3) {
+                    const imageUrl = rankImages[rankDisplay];
+                    if (imageUrl) {
+                        rankContent = `<img src="${imageUrl}" alt="${rankDisplay}등" class="rank-icon">`;
+                    } else {
+                        rankContent = `<span class="rank">${rankDisplay}</span>`; // 이미지 경로가 없으면 숫자로 폴백
+                    }
+                } else {
+                    rankContent = `<span class="rank">${rankDisplay}</span>`;
+                }
 
                 rankingItem.innerHTML = `
-                    <span class="rank">${rankDisplay}</span>
+                    <div class="rank-col">${rankContent}</div> <!-- 등수 컬럼을 위한 새로운 div 추가 -->
                     <span class="nickname">${ranking.nickname}</span>
                     <span class="score">${ranking.score}개 (${ranking.playTime}초)</span>
                 `;
